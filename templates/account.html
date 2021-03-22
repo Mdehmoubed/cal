@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<html>
+    <body>
+        <h3>Hi {{user[0][4]}} <a href="/logout">logout</a></h3><b><b><b>
+            
+            <table >
+                <p hidden>There is'nt any events</p>
+                <thead >
+                    <td><h4>Event name</h4></td>
+                    <td><h4>Adress</h4></td>
+                    <td><h4>Date</h4></td> 
+                    <td><h4>start time</h4></td>
+                    <td><h4>End time</h4></td>
+                    <td><h4></h4></td>
+                    
+                </thead>
+                {% for event in events %}
+                <tr >
+                    <td><h3 ><input type="text"  value={{event[0]}} disabled id='1a{{event[6]}}'></input> </h3></td>
+                    <td><h3 ><input type="text"  value={{event[1]}} disabled id='2a{{event[6]}}'></input> </h3></td>
+                    <td><h3 ><input type="date"  value={{event[3]}} disabled id='3a{{event[6]}}'></input> </h3></td>
+                    <td><h3 ><input type="time"  value={{event[4]}} disabled id='4a{{event[6]}}'></input> </h3></td>
+                    <td><h3 ><input type="time"  value={{event[5]}} disabled id='5a{{event[6]}}'></input> </h3></td>
+                                       
+                    <td><h3>
+                        <button name='del' id='d{{event[6]}}' style="color:red" >del </button>     
+                        <button name==edit id='e{{event[6]}}' style="color:blue">edit</button> 
+                    </h3></td>
+                    {% endfor %}
+                    
+                </tr>
+                
+                    <td><h3 ><input type="text"   id='ename' hidden></input> </h3></td>
+                    <td><h3 ><input type="text"   id='address' hidden></input> </h3></td>
+                    <td><h3 ><input type="date"   id='date' hidden></input> </h3></td>
+                    <td><h3 ><input type="time"   id='start'hidden></input> </h3></td>
+                    <td><h3 ><input type="time"   id='end' hidden></input> </h3></td>
+            
+                <td><h3>
+                    <button   type="submit" id="addevent" style="color:green" >ADD Event</button>     
+                   
+                </h3></td>
+            </table><br><br>
+                 
+       
+         
+    </body>
+    <script>
+        {%if events|length<1 %}
+            $('thead').hide()
+            $('p').show()
+            
+        {% endif%}
+
+        
+        function reloa(){window.location.reload();}
+        
+        $(document).ready(function(){
+            $('button').click(function(){
+                var a =$(this).prop('id');
+                
+                if ($(this).html()=='ADD Event'){
+                    $('thead').show();
+                    $('button').hide();
+                    $(this).show();
+                    $(this).html('done')
+                    $('#ename').show();
+                    $('#address').show();
+                    $('#date').show();
+                    $('#start').show();
+                    $('#end').show();
+                    var change =true;
+                }
+                if (a=='addevent' && $(this).html()=='done' && !change ){
+                   
+                    a1=$("#ename").val();
+                    a2=$("#address").val();
+                    a3=$("#date").val();
+                    a4=$("#start").val();
+                    a5=$("#end").val();
+                   
+                    if( a1.length>2 & a2.length>2 &isNaN(a3.valueOf())&isNaN(a4.valueOf())& isNaN(a5.valueOf())){
+                        change=false;
+                        var send={st:'add',name:a1,address:a2,date:a3,start:a4,end:a5}
+                        alert(send.st);
+                        myJSON = JSON.stringify(send);
+                        $.post( "/postmethod1", {id: myJSON});
+                        setTimeout(reloa, 1000);
+                    }
+                    else{alert("some field didn't assign")}
+                    
+                }   
+                //delete
+                if (a.indexOf('d')== 0){
+                    var send={st:'del',ido:a.slice(1,)}
+                    alert(send.st);
+                    myJSON = JSON.stringify(send);
+                    $.post( "/postmethod1", {id: myJSON});
+                    setTimeout(reloa, 1000);
+                    
+                }
+
+
+                
+
+                //edit
+                if  ($(this).html() == 'edit' ){
+                    $('button').hide();
+                    $(this).show();
+                    $(this).html('done')
+                   
+                    $("#1a"+a.slice(1,)).removeAttr('disabled');
+                    $("#2a"+a.slice(1,)).removeAttr('disabled');
+                    $("#3a"+a.slice(1,)).removeAttr('disabled');
+                    $("#4a"+a.slice(1,)).removeAttr('disabled');
+                    $("#5a"+a.slice(1,)).removeAttr('disabled');
+                    var change =true;
+
+                }
+                
+                
+                if (a.indexOf('e')==0 && $(this).html()=='done' && !change ){
+                    
+                    change = false;
+                    $(this).html('edit')
+                    $('button').show();
+
+                    a0=a.slice(1,);
+                    a1=$("#1a"+a.slice(1,)).val();
+                    a2=$("#2a"+a.slice(1,)).val();
+                    a3=$("#3a"+a.slice(1,)).val();
+                    a4=$("#4a"+a.slice(1,)).val();
+                    a5=$("#5a"+a.slice(1,)).val();
+
+                    var send={st:'edit',ido:a0,name:a1,address:a2,date:a3,start:a4,end:a5}
+                    alert(send.ido);
+                    myJSON = JSON.stringify(send);
+                    $.post( "/postmethod1", {id: myJSON});
+
+                    
+                    $("#1a"+a.slice(1,)).attr('disabled','disabled');
+                    $("#2a"+a.slice(1,)).attr('disabled','disabled');
+                    $("#3a"+a.slice(1,)).attr('disabled','disabled');
+                    $("#4a"+a.slice(1,)).attr('disabled','disabled');
+                    $("#5a"+a.slice(1,)).attr('disabled','disabled');
+
+                    window.location.reload()
+                }    
+
+                
+                
+            })})
+        
+    
+    </script>
+</html>
